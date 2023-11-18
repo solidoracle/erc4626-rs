@@ -4,10 +4,10 @@ const { ABI, ADDRESS } = require('./common');
 async function main() {
     const [signer] = await ethers.getSigners();
 
-    const counter = await ethers.getContractAt(ABI, ADDRESS, signer);
+    const weth = await ethers.getContractAt(ABI, ADDRESS, signer);
     
-    const number = await counter.number();
-    console.log('nuber is:', number);
+    const name = await weth.name();
+    console.log('name is:', name);
 }
 
 main()
