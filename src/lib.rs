@@ -10,56 +10,35 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 mod erc20;
 
-struct WethParams;
+struct VaultParams;
 
 /// Immutable definitions
-impl Erc20Params for WethParams {
-    const NAME: &'static str = "Wrapped Ether Example";
-    const SYMBOL: &'static str = "WETH";
+impl Erc20Params for VaultParams {
+    const NAME: &'static str = "Vault Example";
+    const SYMBOL: &'static str = "VAULT";
     const DECIMALS: u8 = 18;
 }
 
 // The contract
 sol_storage! {
-    #[entrypoint] // Makes Weth the entrypoint
-    struct Weth {
-        #[borrow] // Allows erc20 to access Weth's storage and make calls
-        Erc20<WethParams> erc20;
-    }
-}
-
-// Another contract we'd like to call
-sol_interface! {
-    interface IMath {
-        function sum(uint256[] values) pure returns (string, uint256);
+    #[entrypoint] // Makes Vault the entrypoint
+    struct Vault {
+        #[borrow] // Allows erc20 to access Vault's storage and make calls
+        Erc20<VaultParams> erc20;
     }
 }
 
 #[external]
-#[inherit(Erc20<WethParams>)]
-impl Weth {
+#[inherit(Erc20<VaultParams>)]
+impl Vault {
     #[payable]
-    pub fn deposit(&mut self) -> Result<(), Vec<u8>> {
-        self.erc20.mint(msg::sender(), msg::value());
+    pub fn deposit(&mut self, amount: U256) -> Result<(), Vec<u8>> {
+        self.erc20.mint(msg::sender(), amount);
         Ok(())
     }
 
     pub fn withdraw(&mut self, amount: U256) -> Result<(), Vec<u8>> {
         self.erc20.burn(msg::sender(), amount)?;
-
-        // send the user their funds
         call::transfer_eth(msg::sender(), amount)
-    }
-
-    // sums numbers
-    pub fn sum(values: Vec<U256>) -> Result<(String, U256), Vec<u8>> {
-        Ok(("sum".into(), values.iter().sum()))
-    }
-
-    // calls the sum() method from the interface
-    pub fn sum_with_helper(&self, helper: IMath, values: Vec<U256>) -> Result<U256, Vec<u8>> {
-        let (text, sum) = helper.sum(self, values)?;
-        assert_eq!(&text, "sum");
-        Ok(sum)
     }
 }
