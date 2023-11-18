@@ -2,3 +2,4 @@
 .cargo
 .github
 .env
+cargo.lock

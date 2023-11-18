@@ -1,5 +1,5 @@
 [package]
-name = "stylus_hello_world"
+name = "erc4626-rs"
 version = "0.1.5"
 edition = "2021"
 license = "MIT OR Apache-2.0"
