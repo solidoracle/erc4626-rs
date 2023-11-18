@@ -4,10 +4,15 @@ const { ABI, ADDRESS } = require('./common');
 async function main() {
     const [signer] = await ethers.getSigners();
 
-    const weth = await ethers.getContractAt(ABI, ADDRESS, signer);
+    const vault = await ethers.getContractAt(ABI, ADDRESS, signer);
     
-    const name = await weth.name();
-    console.log('name is:', name);
+
+    const amountToDeposit = ethers.parseEther("0.000000000000001");
+
+    await vault.deposit(amountToDeposit);
+
+    const balance = await vault.balanceOf(signer.address);
+    console.log('balance is:', balance);
 }
 
 main()
