@@ -58,7 +58,7 @@ impl Vault {
         } else { 
             amount.checked_mul(supply).ok_or("Overflow")?.checked_div(self.totalAssets()?).ok_or("Divide by zero")?
         };
-        self.erc20.mint(msg::sender(), amount);
+        self.erc20.mint(msg::sender(), shares);
 
         self.afterDeposit(amount);
 
